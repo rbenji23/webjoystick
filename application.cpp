@@ -1,7 +1,6 @@
 /* application.cpp - very simple Webduino example */
 #include "application.h"
 #include "WebServer.h"
-//#include "jquery.h"
 #include "joystick.h"
 #include "webpages.h"
 #include "MDNS/MDNS.h"
@@ -49,7 +48,7 @@ void Timeout()
 }
 
 Timer timer_50msec(50, Process50msecEvents);
-Timer timer_timeout(5000, Timeout);
+Timer timer_timeout(2000, Timeout);
 
 void indexCmd(WebServer &server, WebServer::ConnectionType type, char *, bool)
 {
@@ -87,23 +86,6 @@ void dualjsCmd(WebServer &server, WebServer::ConnectionType type, char *, bool)
   }
 }
 
-// void jqueryjsCmd(WebServer &server, WebServer::ConnectionType type, char *, bool)
-// {
-//   console.printlnf("jquery.js Called");
-//   /* this line sends the standard "we're all OK" headers back to the
-//      browser */
-//   server.httpSuccess();
-//
-//   /* if we're handling a GET or POST, we can output our data here.
-//      For a HEAD request, we just stop after outputting headers. */
-//   if (type != WebServer::HEAD)
-//   {
-//     /* this is a special form of print that outputs from PROGMEM */
-//     server.printP(jqueryjs1);
-//     //server.printP(joystickjs2);
-//   }
-// }
-
 void joystickjsCmd(WebServer &server, WebServer::ConnectionType type, char *, bool)
 {
   console.printlnf("virtualjoystick.js Called");
@@ -122,6 +104,8 @@ void joystickjsCmd(WebServer &server, WebServer::ConnectionType type, char *, bo
 
 void motorCmd(WebServer &server, WebServer::ConnectionType type, char *url_tail, bool tail_complete)
 {
+  timer_timeout.reset();
+
   console.printlnf("MotorCmd Called");
 
   URLPARAM_RESULT rc;
@@ -184,7 +168,6 @@ void setup()
   webserver.addCommand("single.html",&singlejsCmd);
   webserver.addCommand("dual.html",&dualjsCmd);
   webserver.addCommand("cmd", &motorCmd);
-  webserver.addCommand("jquery.js",&joystickjsCmd);
   webserver.addCommand("virtualjoystick.js",&joystickjsCmd);
 
   /* start the server to wait for connections */
